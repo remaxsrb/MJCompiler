@@ -1,0 +1,14 @@
+program test
+
+{
+	void main() {
+
+
+	print(ord('A')); 
+	
+	
+	}
+	
+	
+
+}

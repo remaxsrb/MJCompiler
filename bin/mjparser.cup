@@ -1,0 +1,391 @@
+package rs.ac.bg.etf.pp1;
+
+import java_cup.runtime.*;
+import org.apache.log4j.*;
+import rs.ac.bg.etf.pp1.ast.*;
+
+parser code {:
+
+	boolean errorDetected;
+
+	Logger log = Logger.getLogger(getClass());
+   
+   
+    // slede redefinisani metodi za prijavu gresaka radi izmene teksta poruke
+     
+    public void report_fatal_error(String message, Object info) throws java.lang.Exception {
+      done_parsing();
+      report_error(message, info);
+    }
+  
+    public void syntax_error(Symbol cur_token) {
+        report_error("\nSintaksna greska", cur_token);
+    }
+  
+    public void unrecovered_syntax_error(Symbol cur_token) throws java.lang.Exception {
+        report_fatal_error("Fatalna greska, parsiranje se ne moze nastaviti", cur_token);
+    }
+
+    public void report_error(String message, Object info) {
+    	errorDetected = true;
+    	StringBuilder msg = new StringBuilder(message); 
+    	if (info instanceof Symbol)
+            msg.append (" na liniji ").append(((Symbol)info).left);
+        log.error(msg.toString());
+    }
+
+
+:}
+
+init with {:
+	errorDetected = false;
+:}
+
+scan with {:
+	Symbol s = this.getScanner().next_token();
+	if (s != null && s.value != null) 
+		log.info(s.toString() + " " + s.value.toString());
+	return s;
+:}
+
+
+terminal PROGRAM, BREAK, CONST, NEW, PRINT, READ, RETURN, VOID, CONTINUE, FOR, STATIC, NAMESPACE;
+terminal IF, ELSE;
+terminal PLUS, MINUS, MULTIPLY, DIVIDE, REM, EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL;
+terminal AND, OR;
+terminal ASSIGNMENT;
+terminal INC, DEC;
+terminal SEMI_COLON, COLON, COMMA, DOT, DBLCOLON;
+terminal LEFT_ROUND_BRACKET, RIGHT_ROUND_BRACKET, LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET, LEFT_CURLY_BRACKET, RIGHT_CURLY_BRACKET;
+
+terminal String IDENT;
+terminal Integer NUMBER, BOOL;
+terminal Character CHAR;
+
+nonterminal Program, DeclList, MethodDeclList, NamespaceDecl, ConstDeclList, VarDeclList, ConDecl, Constant, ConDeclMore, VarDeclMore, DesignatorOption, DesignatorStmtMore;
+nonterminal MethodDecl, FormParList, LocalVarDeclList, StatementList, FormPar, FormParMore, Statement, DesignatorStatement, SingleStatement;
+nonterminal Statements, Assignop, DesignatorMore, ActParsMore, ActPars, Addop, Relop, Mulop, DesignatorStmtList, DesignatorStmtListBegin;
+nonterminal Unary, ElseStatement, CondFactFor, NamespaceDeclList, DesignatorStatementSingle, Else, ForBody, ForBodyBegin, ForCount, ForCountBegin, CondFactForBegin;
+nonterminal ProgramName, NamespaceName, ForNonTerm, ActPar, ActParListBegin, DesignatorStatementListBegin, DesignatorStatements, DesignatorStatementsMore;
+
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Factor, FactorBody, MulOpList, Term, AddOpList, Expr;
+
+nonterminal  rs.etf.pp1.symboltable.concepts.Struct Condition, CondTerm, CondFact, CondTermList, CondFactList;
+
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorVarName, DesignatorNamespaceName, DesignatorArrayName;
+
+nonterminal rs.etf.pp1.symboltable.concepts.Obj MethodReturnAndName, VarDecl;
+
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type;
+
+precedence left ELSE;
+
+
+Program ::= (Program) PROGRAM ProgramName NamespaceDeclList DeclList LEFT_CURLY_BRACKET MethodDeclList RIGHT_CURLY_BRACKET;
+
+ProgramName ::= (ProgramName) IDENT;
+
+DeclList ::= (DeclList_Con) DeclList ConstDeclList
+			 |
+			 (DeclList_Var) DeclList VarDeclList
+			 |
+			 (DeclList_Epsilon)  /* epsilon */
+			 ;
+
+
+NamespaceDeclList ::= (NamespaceDeclList_Namespace) NamespaceDeclList NamespaceDecl
+					  |
+					  (NamespaceDeclList_Epsilon) /* epsilon */
+					  ;
+					  
+NamespaceDecl ::= (NamespaceDecl_Ident) NAMESPACE NamespaceName LEFT_CURLY_BRACKET DeclList LEFT_CURLY_BRACKET MethodDeclList RIGHT_CURLY_BRACKET RIGHT_CURLY_BRACKET;
+
+NamespaceName ::=(NamespaceName) IDENT;
+
+ConstDeclList ::= (ConstDeclList) CONST Type ConDecl ConDeclMore SEMI_COLON;
+
+ConDecl ::= (ConDecl) IDENT ASSIGNMENT Constant; 
+
+Constant ::= (Constant_Number) NUMBER
+			 | 
+			 (Constant_Char) CHAR
+			 |
+			 (Constant_Bool) BOOL
+			 ;
+			 
+ConDeclMore ::= (ConDeclMore_Comma) COMMA ConDecl ConDeclMore
+				|
+				(ConDeclMore_Epsilon) /* epsilon */
+				;
+				
+				
+				
+VarDeclList ::= (VarDeclList) Type VarDecl VarDeclMore SEMI_COLON;				
+				
+				
+VarDecl ::= (VarDecl_Var) IDENT 
+			|
+			(VarDecl_Array) IDENT LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
+			;
+
+VarDeclMore ::= (VarDeclMore_Comma) COMMA VarDecl VarDeclMore
+				|
+				(VarDeclMore_Epsilon) /* epsilon */
+				;
+				
+Type ::= (Type) IDENT;
+
+
+MethodDeclList ::= (MethodDeclList_List) MethodDeclList MethodDecl
+					|
+				   (MethodDeclList_Epsilon) /* epsilon */
+					;
+
+MethodDecl ::= (MethodDecl) MethodReturnAndName LEFT_ROUND_BRACKET FormParList RIGHT_ROUND_BRACKET LocalVarDeclList LEFT_CURLY_BRACKET StatementList RIGHT_CURLY_BRACKET ;
+
+
+MethodReturnAndName ::= (MethodReturnAndName_type) Type IDENT
+						|
+						(MethodReturnAndName_void) VOID IDENT
+						;
+
+
+FormParList ::= (FormParList_List) FormPar FormParMore
+				|
+				(FormParList_e) /* epsilon */
+				;
+
+FormParMore ::= (FormParMore_comma) COMMA FormPar FormParMore
+				|
+				(FormParMore_e) /* epsilon */
+				;
+	
+FormPar ::= (FormPar_Var) Type IDENT
+			|
+			(FormPar_Array) Type IDENT LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
+			;
+
+
+LocalVarDeclList ::= (LocalVarDeclList_List) LocalVarDeclList VarDeclList
+					 |
+					 (LocalVarDeclList_Epsilon) /* epsilon */
+					 ;
+
+
+StatementList ::= (StatementList_List) StatementList SingleStatement
+				  |
+				  (StatementList_Epsilon) /* epsilon */
+				  ;
+
+
+
+
+Statement ::= (Statement_SingleStatement) SingleStatement
+			  |
+			  (Statement_Statements) Statements
+			  ;
+
+
+SingleStatement ::=   (SingleStatement_Designator) DesignatorStatement SEMI_COLON
+					  |
+					  (SingleStatement_If) IF LEFT_ROUND_BRACKET Condition RIGHT_ROUND_BRACKET Statement ElseStatement
+					  |
+					  (SingleStatement_Break) BREAK SEMI_COLON
+					  |
+					  (SingleStatement_Continue) CONTINUE SEMI_COLON
+					  |
+					  (SingleStatement_Return1) RETURN Expr SEMI_COLON
+					  |
+					  (SingleStatement_Return2) RETURN SEMI_COLON
+					  |
+					  (SingleStatement_Read) READ LEFT_ROUND_BRACKET Designator RIGHT_ROUND_BRACKET SEMI_COLON
+					  |
+					  (SingleStatement_Print1) PRINT LEFT_ROUND_BRACKET Expr RIGHT_ROUND_BRACKET SEMI_COLON
+					  |
+					  (SingleStatement_Print2) PRINT LEFT_ROUND_BRACKET Expr COMMA NUMBER RIGHT_ROUND_BRACKET SEMI_COLON
+					  |
+					  (SingleStatement_For) ForNonTerm LEFT_ROUND_BRACKET DesignatorStatements SEMI_COLON CondFactForBegin CondFactFor SEMI_COLON ForCountBegin ForCount RIGHT_ROUND_BRACKET ForBodyBegin ForBody
+					  ;
+					  
+ForNonTerm ::= 	(ForNonTerm)  FOR;
+
+CondFactForBegin ::= (CondFactForBegin) /* epsilon */ ;
+
+ForBodyBegin ::= (ForBodyBegin) /* epsilon */ ;
+ForBody ::= (ForBody)   Statement;
+
+Statements ::= (Statements) LEFT_CURLY_BRACKET StatementList RIGHT_CURLY_BRACKET;
+
+
+ForCountBegin ::= (ForCountBegin) /* epsilon */ ;
+ForCount ::= (ForCount) DesignatorStatements;
+
+DesignatorStatementListBegin ::= (DesignatorStatementListBegin) /* epsilon */  ;
+
+DesignatorStatements ::= (DesignatorStatements_ds) DesignatorStatementListBegin DesignatorStatement DesignatorStatementsMore
+			|
+			(DesignatorStatements_Epsilon) DesignatorStatementListBegin
+			;
+
+DesignatorStatementsMore ::= (DesignatorStatementsMore_Comma) COMMA DesignatorStatement DesignatorStatementsMore
+				|
+				(DesignatorStatementsMore_Epsilon) /* epsilon */
+				;				  
+
+ElseStatement::= (ElseStatement_S) Else Statement
+				 |
+				 (ElseStatement_Epsilon) /* epsilon */
+				 ;
+			  
+
+Else ::= (Else) ELSE;
+
+DesignatorStatement ::= (DesignatorStatement_S) DesignatorStatementSingle;
+
+
+DesignatorStatementSingle ::= (DesignatorStatement_Assign) Designator Assignop Expr
+							  |
+							  (DesignatorStatement_Inc) Designator INC
+							  |
+							  (DesignatorStatement_Dec) Designator DEC
+							  |
+							  (DesignatorStatement_Meth) Designator LEFT_ROUND_BRACKET ActPars RIGHT_ROUND_BRACKET
+							  |
+							  (DesignatorStatement_Smth) LEFT_SQUARE_BRACKET DesignatorStmtList MULTIPLY Designator RIGHT_SQUARE_BRACKET ASSIGNMENT Designator
+							  ;
+						
+DesignatorStmtListBegin ::=(DesignatorStmtListBegin) /* epsilon */;
+
+DesignatorStmtList ::= (DesignatorStmtList_List)DesignatorStmtListBegin DesignatorOption COMMA DesignatorStmtMore
+					    |
+					   (DesignatorStmtList_Epsilon) DesignatorStmtListBegin
+					   ;
+					   
+DesignatorStmtMore ::= (DesignatorStmtMore_More) DesignatorOption COMMA DesignatorStmtMore
+					   |
+					   (DesignatorStmtMore_Epsilon) /* epsilon */
+					   ;
+
+
+DesignatorOption ::= (DesignatorOption_Yes) Designator
+					 |
+					 (DesignatorOption_No) /* epsilon */
+					 ;
+
+
+CondFactFor ::= (CondFactFor_True) Condition
+				|
+				(ConFactFor_Epsilon) /* epsilon */
+				;
+
+Condition ::= (Condition) CondTermList;
+
+CondTermList ::= (CondTermList_OR) CondTermList OR CondTerm
+				| 
+				(CondTermList_ct) CondTerm
+				;
+				
+CondTerm ::= (CondTerm) CondFactList;
+
+CondFactList ::= (CondFactList_and) CondFactList AND CondFact 
+				| 
+				(CondFactList_cf) CondFact
+				;
+				
+CondFact ::= (CondFact_expr) Expr
+			|
+			(CondFact_expr_r_expr) Expr Relop Expr 
+			;			
+
+ActParListBegin ::= (ActParListBegin) /* epsilon */;
+
+ActPars ::= (ActPars_Expr) ActParListBegin ActPar ActParsMore
+			|
+			(ActPars_Epsilon) ActParListBegin
+			;
+
+ActParsMore ::= (ActParsMore_Comma) COMMA ActPar ActParsMore
+				|
+				(ActParsMore_Epsilon) /* epsilon */
+				;
+				
+ActPar ::= (ActPar) Expr;
+				
+Expr ::= (Expr) AddOpList ;
+
+AddOpList ::= (AddOpList_term) Term
+				|
+				(AddOpList_add) AddOpList  Addop Term ;
+		
+		
+Term ::= (Term) MulOpList;
+	  
+MulOpList ::= (MulOpList_factor) Factor 
+				| 
+				(MulopList_mul) MulOpList Mulop Factor ;
+
+
+
+Unary ::= (Unary_minus) MINUS
+		  |
+		  (Unary_Epsilon) /* epsilon */
+		  ;
+
+Factor ::= (Factor)Unary FactorBody;
+
+FactorBody ::= (Factor_Designator_Var) Designator
+		   |
+		   (Factor_Designator_Meth) Designator LEFT_ROUND_BRACKET ActPars RIGHT_ROUND_BRACKET
+		   |
+		   (Factor_Designator_Num) NUMBER
+		   |
+		   (Factor_Designator_Char) CHAR
+		   |
+		   (Factor_Designator_BOOL) BOOL
+		   |
+		   (Factor_Designator_NewExpr) NEW Type LEFT_SQUARE_BRACKET Expr RIGHT_SQUARE_BRACKET
+		   ;
+
+
+Designator ::= (Designator_Var_solo) DesignatorVarName
+               |
+               (Designator_Namespace_var) DesignatorNamespaceName DBLCOLON DesignatorVarName 
+               | 
+               (Designator_Arr_solo) DesignatorArrayName LEFT_SQUARE_BRACKET Expr RIGHT_SQUARE_BRACKET 
+               | 
+               (Designator_Namespace_Arr) DesignatorNamespaceName DBLCOLON DesignatorArrayName LEFT_SQUARE_BRACKET Expr RIGHT_SQUARE_BRACKET 
+               ;
+               
+
+DesignatorArrayName ::= (DesignatorArrayName) IDENT;               
+DesignatorVarName ::= (DesignatorVarName) IDENT;             
+DesignatorNamespaceName ::=(DesignatorNamespaceName) IDENT;
+
+			   
+Assignop ::= (Assignop) ASSIGNMENT;
+
+Addop ::= (Addop_Plus) PLUS 
+		|
+		(Addop_Minus) MINUS
+		;
+		
+		
+Relop ::= (Relop_Equals) EQUAL
+		  |
+		  (Relop_NotEquals) NOT_EQUAL
+		  |
+		  (Relop_GREATER) GREATER
+		  |
+		  (Relop_GEquals) GREATER_EQUAL
+		  |
+		  (Relop_Less) LESS
+		  |
+		  (Relop_LEquals) LESS_EQUAL
+		  ;
+		  
+Mulop ::= (Mulop_Mul) MULTIPLY
+		  |
+		  (Mulop_Div) DIVIDE
+		  |
+		  (Mulop_Rem) REM
+		  ;

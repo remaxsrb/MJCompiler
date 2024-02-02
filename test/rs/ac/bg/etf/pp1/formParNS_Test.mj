@@ -1,0 +1,36 @@
+program test
+
+namespace Test1{
+
+	{
+		int sum(int z, int d) int x, y;
+		{
+			return z + d;
+		}
+		
+		
+	}
+
+	
+}
+
+
+
+
+
+{
+
+
+	void main() {
+
+
+	
+	}
+	
+
+	
+
+	
+
+
+}

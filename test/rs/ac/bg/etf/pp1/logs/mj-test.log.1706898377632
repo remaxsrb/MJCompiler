@@ -1,0 +1,354 @@
+INFO  19:25:11,855 - Compiling source file: D:\Documents\faks\PP1\pp1lab.templateAST\pp1lab.templateAST\workspace\MJCompiler\test\rs\ac\bg\etf\pp1\program.mj
+INFO  19:25:11,880 - #2 program
+INFO  19:25:11,880 - #43 test302
+INFO  19:25:11,880 - #43 int
+INFO  19:25:11,881 - #43 i
+INFO  19:25:11,882 - #32 ;
+INFO  19:25:11,882 - #43 bool
+INFO  19:25:11,883 - #43 ibool
+INFO  19:25:11,883 - #32 ;
+INFO  19:25:11,883 - #41 {
+INFO  19:25:11,883 - #9 void
+INFO  19:25:11,883 - #43 main
+INFO  19:25:11,883 - #37 (
+INFO  19:25:11,883 - #38 )
+INFO  19:25:11,884 - #41 {
+INFO  19:25:11,884 - #43 ibool
+INFO  19:25:11,884 - #29 =
+INFO  19:25:11,885 - #45 0
+INFO  19:25:11,886 - #32 ;
+INFO  19:25:11,887 - #11 for
+INFO  19:25:11,888 - #37 (
+INFO  19:25:11,888 - #43 i
+INFO  19:25:11,889 - #29 =
+INFO  19:25:11,889 - #44 0
+INFO  19:25:11,889 - #32 ;
+INFO  19:25:11,890 - #43 i
+INFO  19:25:11,890 - #25 <
+INFO  19:25:11,890 - #44 5
+INFO  19:25:11,891 - #32 ;
+INFO  19:25:11,894 - #43 i
+INFO  19:25:11,895 - #30 ++
+INFO  19:25:11,895 - #38 )
+INFO  19:25:11,895 - #41 {
+INFO  19:25:11,896 - #14 if
+INFO  19:25:11,896 - #37 (
+INFO  19:25:11,896 - #43 i
+INFO  19:25:11,896 - #21 ==
+INFO  19:25:11,896 - #44 2
+INFO  19:25:11,896 - #38 )
+INFO  19:25:11,896 - #43 ibool
+INFO  19:25:11,896 - #29 =
+INFO  19:25:11,896 - #45 1
+INFO  19:25:11,896 - #32 ;
+INFO  19:25:11,896 - #42 }
+INFO  19:25:11,897 - #6 print
+INFO  19:25:11,898 - #37 (
+INFO  19:25:11,898 - #43 ibool
+INFO  19:25:11,898 - #38 )
+INFO  19:25:11,898 - #32 ;
+INFO  19:25:11,898 - #42 }
+INFO  19:25:11,898 - #42 }
+INFO  19:25:11,899 - Program(
+  ProgramName(
+   test302
+  ) [ProgramName]
+  NamespaceDeclList_Epsilon(
+  ) [NamespaceDeclList_Epsilon]
+  DeclList_Var(
+    DeclList_Var(
+      DeclList_Epsilon(
+      ) [DeclList_Epsilon]
+      VarDeclList(
+        Type(
+         int
+        ) [Type]
+        VarDecl_Var(
+         i
+        ) [VarDecl_Var]
+        VarDeclMore_Epsilon(
+        ) [VarDeclMore_Epsilon]
+      ) [VarDeclList]
+    ) [DeclList_Var]
+    VarDeclList(
+      Type(
+       bool
+      ) [Type]
+      VarDecl_Var(
+       ibool
+      ) [VarDecl_Var]
+      VarDeclMore_Epsilon(
+      ) [VarDeclMore_Epsilon]
+    ) [VarDeclList]
+  ) [DeclList_Var]
+  MethodDeclList_List(
+    MethodDeclList_Epsilon(
+    ) [MethodDeclList_Epsilon]
+    MethodDecl(
+      MethodReturnAndName_void(
+       main
+      ) [MethodReturnAndName_void]
+      FormParList_e(
+      ) [FormParList_e]
+      LocalVarDeclList_Epsilon(
+      ) [LocalVarDeclList_Epsilon]
+      StatementList_List(
+        StatementList_List(
+          StatementList_List(
+            StatementList_Epsilon(
+            ) [StatementList_Epsilon]
+            SingleStatement_Designator(
+              DesignatorStatement_S(
+                DesignatorStatement_Assign(
+                  Designator_Var_solo(
+                    DesignatorVarName(
+                     ibool
+                    ) [DesignatorVarName]
+                  ) [Designator_Var_solo]
+                  Assignop(
+                  ) [Assignop]
+                  Expr(
+                    AddOpList_term(
+                      Term(
+                        MulOpList_factor(
+                          Factor(
+                            Unary_Epsilon(
+                            ) [Unary_Epsilon]
+                            Factor_Designator_BOOL(
+                             0
+                            ) [Factor_Designator_BOOL]
+                          ) [Factor]
+                        ) [MulOpList_factor]
+                      ) [Term]
+                    ) [AddOpList_term]
+                  ) [Expr]
+                ) [DesignatorStatement_Assign]
+              ) [DesignatorStatement_S]
+            ) [SingleStatement_Designator]
+          ) [StatementList_List]
+          SingleStatement_For(
+            ForNonTerm(
+            ) [ForNonTerm]
+            DesignatorStatements_ds(
+              DesignatorStatementListBegin(
+              ) [DesignatorStatementListBegin]
+              DesignatorStatement_S(
+                DesignatorStatement_Assign(
+                  Designator_Var_solo(
+                    DesignatorVarName(
+                     i
+                    ) [DesignatorVarName]
+                  ) [Designator_Var_solo]
+                  Assignop(
+                  ) [Assignop]
+                  Expr(
+                    AddOpList_term(
+                      Term(
+                        MulOpList_factor(
+                          Factor(
+                            Unary_Epsilon(
+                            ) [Unary_Epsilon]
+                            Factor_Designator_Num(
+                             0
+                            ) [Factor_Designator_Num]
+                          ) [Factor]
+                        ) [MulOpList_factor]
+                      ) [Term]
+                    ) [AddOpList_term]
+                  ) [Expr]
+                ) [DesignatorStatement_Assign]
+              ) [DesignatorStatement_S]
+              DesignatorStatementsMore_Epsilon(
+              ) [DesignatorStatementsMore_Epsilon]
+            ) [DesignatorStatements_ds]
+            CondFactForBegin(
+            ) [CondFactForBegin]
+            CondFactFor_True(
+              Condition(
+                CondTermList_ct(
+                  CondTerm(
+                    CondFactList_cf(
+                      CondFact_expr_r_expr(
+                        Expr(
+                          AddOpList_term(
+                            Term(
+                              MulOpList_factor(
+                                Factor(
+                                  Unary_Epsilon(
+                                  ) [Unary_Epsilon]
+                                  Factor_Designator_Var(
+                                    Designator_Var_solo(
+                                      DesignatorVarName(
+                                       i
+                                      ) [DesignatorVarName]
+                                    ) [Designator_Var_solo]
+                                  ) [Factor_Designator_Var]
+                                ) [Factor]
+                              ) [MulOpList_factor]
+                            ) [Term]
+                          ) [AddOpList_term]
+                        ) [Expr]
+                        Relop_Less(
+                        ) [Relop_Less]
+                        Expr(
+                          AddOpList_term(
+                            Term(
+                              MulOpList_factor(
+                                Factor(
+                                  Unary_Epsilon(
+                                  ) [Unary_Epsilon]
+                                  Factor_Designator_Num(
+                                   5
+                                  ) [Factor_Designator_Num]
+                                ) [Factor]
+                              ) [MulOpList_factor]
+                            ) [Term]
+                          ) [AddOpList_term]
+                        ) [Expr]
+                      ) [CondFact_expr_r_expr]
+                    ) [CondFactList_cf]
+                  ) [CondTerm]
+                ) [CondTermList_ct]
+              ) [Condition]
+            ) [CondFactFor_True]
+            ForCountBegin(
+            ) [ForCountBegin]
+            ForCount(
+              DesignatorStatements_ds(
+                DesignatorStatementListBegin(
+                ) [DesignatorStatementListBegin]
+                DesignatorStatement_S(
+                  DesignatorStatement_Inc(
+                    Designator_Var_solo(
+                      DesignatorVarName(
+                       i
+                      ) [DesignatorVarName]
+                    ) [Designator_Var_solo]
+                  ) [DesignatorStatement_Inc]
+                ) [DesignatorStatement_S]
+                DesignatorStatementsMore_Epsilon(
+                ) [DesignatorStatementsMore_Epsilon]
+              ) [DesignatorStatements_ds]
+            ) [ForCount]
+            ForBodyBegin(
+            ) [ForBodyBegin]
+            ForBody(
+              Statement_Statements(
+                Statements(
+                  StatementList_List(
+                    StatementList_Epsilon(
+                    ) [StatementList_Epsilon]
+                    SingleStatement_If(
+                      Condition(
+                        CondTermList_ct(
+                          CondTerm(
+                            CondFactList_cf(
+                              CondFact_expr_r_expr(
+                                Expr(
+                                  AddOpList_term(
+                                    Term(
+                                      MulOpList_factor(
+                                        Factor(
+                                          Unary_Epsilon(
+                                          ) [Unary_Epsilon]
+                                          Factor_Designator_Var(
+                                            Designator_Var_solo(
+                                              DesignatorVarName(
+                                               i
+                                              ) [DesignatorVarName]
+                                            ) [Designator_Var_solo]
+                                          ) [Factor_Designator_Var]
+                                        ) [Factor]
+                                      ) [MulOpList_factor]
+                                    ) [Term]
+                                  ) [AddOpList_term]
+                                ) [Expr]
+                                Relop_Equals(
+                                ) [Relop_Equals]
+                                Expr(
+                                  AddOpList_term(
+                                    Term(
+                                      MulOpList_factor(
+                                        Factor(
+                                          Unary_Epsilon(
+                                          ) [Unary_Epsilon]
+                                          Factor_Designator_Num(
+                                           2
+                                          ) [Factor_Designator_Num]
+                                        ) [Factor]
+                                      ) [MulOpList_factor]
+                                    ) [Term]
+                                  ) [AddOpList_term]
+                                ) [Expr]
+                              ) [CondFact_expr_r_expr]
+                            ) [CondFactList_cf]
+                          ) [CondTerm]
+                        ) [CondTermList_ct]
+                      ) [Condition]
+                      Statement_SingleStatement(
+                        SingleStatement_Designator(
+                          DesignatorStatement_S(
+                            DesignatorStatement_Assign(
+                              Designator_Var_solo(
+                                DesignatorVarName(
+                                 ibool
+                                ) [DesignatorVarName]
+                              ) [Designator_Var_solo]
+                              Assignop(
+                              ) [Assignop]
+                              Expr(
+                                AddOpList_term(
+                                  Term(
+                                    MulOpList_factor(
+                                      Factor(
+                                        Unary_Epsilon(
+                                        ) [Unary_Epsilon]
+                                        Factor_Designator_BOOL(
+                                         1
+                                        ) [Factor_Designator_BOOL]
+                                      ) [Factor]
+                                    ) [MulOpList_factor]
+                                  ) [Term]
+                                ) [AddOpList_term]
+                              ) [Expr]
+                            ) [DesignatorStatement_Assign]
+                          ) [DesignatorStatement_S]
+                        ) [SingleStatement_Designator]
+                      ) [Statement_SingleStatement]
+                      ElseStatement_Epsilon(
+                      ) [ElseStatement_Epsilon]
+                    ) [SingleStatement_If]
+                  ) [StatementList_List]
+                ) [Statements]
+              ) [Statement_Statements]
+            ) [ForBody]
+          ) [SingleStatement_For]
+        ) [StatementList_List]
+        SingleStatement_Print1(
+          Expr(
+            AddOpList_term(
+              Term(
+                MulOpList_factor(
+                  Factor(
+                    Unary_Epsilon(
+                    ) [Unary_Epsilon]
+                    Factor_Designator_Var(
+                      Designator_Var_solo(
+                        DesignatorVarName(
+                         ibool
+                        ) [DesignatorVarName]
+                      ) [Designator_Var_solo]
+                    ) [Factor_Designator_Var]
+                  ) [Factor]
+                ) [MulOpList_factor]
+              ) [Term]
+            ) [AddOpList_term]
+          ) [Expr]
+        ) [SingleStatement_Print1]
+      ) [StatementList_List]
+    ) [MethodDecl]
+  ) [MethodDeclList_List]
+) [Program]
+INFO  19:25:11,900 - =========================================
+INFO  19:25:11,906 - =========================================
+INFO  19:25:11,909 - Generisanje uspesno zavrseno!

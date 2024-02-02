@@ -1,0 +1,22 @@
+//Test 302
+
+program test302
+
+
+{
+
+	
+	void main()
+	{
+		
+		
+			
+		ibool = false;
+		for(i=0; i < 5; i++){
+			if(i == 2) ibool = true;
+		}
+		
+		print(ibool);
+	}
+}
+

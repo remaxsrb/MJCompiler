@@ -1,0 +1,29 @@
+//Test 302
+
+program test302
+
+namespace Unpacking{
+	int niz[],niz2[],niz3[];
+	int a,b;
+	
+	{}
+}
+
+int i;
+int niz[];
+int a;
+
+{
+
+	
+	void main()
+	{
+		a = 3;
+		for (i=0; i < 3; i++){
+			niz[i] = niz[i] * 2 * a;
+		}
+		
+		for (i=0; i < 3; i++) print(niz[i]);
+
+	}
+}
