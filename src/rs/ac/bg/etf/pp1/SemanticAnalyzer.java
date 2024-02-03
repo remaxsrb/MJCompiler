@@ -280,6 +280,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			formParObj = Tab.insert(Obj.Var, formParName, currentType);	
 			formParObj.setFpPos(1);
 			currentMethod.setLevel(currentMethod.getLevel()+1);
+			
 		}
 		else
 			report_error("Dvostruka definicija formalnog parametra: " + formPar_var.getI2(), formPar_var);
@@ -385,6 +386,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		factor_Designator_BOOL.struct = boolType;
 	}
 	
+	
+	@Override
+	public void visit (Factor_Designator_Expr factor_Designator_Expr) {
+		factor_Designator_Expr.struct = factor_Designator_Expr.getExpr().struct;
+	}
 	
 	@Override
 	public void visit (Factor_Designator_Var factor_Designator_Var) {
@@ -549,12 +555,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			
 			List<Struct> formal_param_list = new ArrayList<>();
 			
-			//log.info (fdsMeth.getName());
-			
 			for (Obj local : fdsMeth.getLocalSymbols()) {
 				if(local.getKind() == Obj.Var && local.getLevel() == 1 && local.getFpPos() == 1)
 					formal_param_list.add(local.getType());
 				else if (fdsMeth.getName().equals("ord")) {
+
 					formal_param_list.add(local.getType());
 				}
 			}
@@ -563,11 +568,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			factor_Designator_Meth.getActPars().traverseBottomUp(actParCounter);
 			
 			List<Struct> apList = actParCounter.finalactParList;
-			
-			
-			//log.info("Broj formalnih parametara: " + formal_param_list.size());
-			//log.info("Broj act parametara: " + apList.size());
-			
+
 			try {
 				if(formal_param_list.size() != apList.size()) 
 					throw new Exception("Broj formalnih i act parametara nije isti");

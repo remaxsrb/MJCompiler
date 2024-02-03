@@ -344,6 +344,8 @@ FactorBody ::= (Factor_Designator_Var) Designator
 		   (Factor_Designator_BOOL) BOOL
 		   |
 		   (Factor_Designator_NewExpr) NEW Type LEFT_SQUARE_BRACKET Expr RIGHT_SQUARE_BRACKET
+		   |
+		   (Factor_Designator_Expr) LEFT_ROUND_BRACKET Expr RIGHT_ROUND_BRACKET
 		   ;
 
 
