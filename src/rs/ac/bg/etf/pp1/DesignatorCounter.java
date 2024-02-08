@@ -9,28 +9,20 @@ import rs.etf.pp1.symboltable.concepts.*;
 
 public class DesignatorCounter extends VisitorAdaptor {
 	
-	List<Obj> finalactDesignatorList = new ArrayList<>();
+	List<Obj> designatorList = new ArrayList<>();
 	
-	Stack<List<Obj>> designatorLists = new Stack<>();
-	
-	@Override
-	public void visit (DesignatorStmtListBegin designatorStmtListBegin) {
-		designatorLists.push(new ArrayList<>());
-	}
+	int designator_option_no_counter = 0 ;
+		
 	
 	@Override
 	public void visit (DesignatorOption_Yes designatorOption_Yes) {
-		designatorLists.peek().add(designatorOption_Yes.getDesignator().obj);
+		designatorList.add(designatorOption_Yes.getDesignator().obj);
 	}
 	
 	@Override
-	public void visit (DesignatorStmtList_List designatorStmtList_List) {
-		finalactDesignatorList = designatorLists.pop();
+	public void visit (DesignatorOption_No designatorOption_No) {
+		designator_option_no_counter++;
 	}
 	
-	@Override
-	public void visit (DesignatorStmtList_Epsilon designatorStmtList_Epsilon) {
-		finalactDesignatorList = designatorLists.pop();
-	}
-
+	
 }

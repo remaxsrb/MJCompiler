@@ -16,7 +16,7 @@ public class CodeGenerator extends VisitorAdaptor {
 	
 	private int mainPc;
 	
-	private Stack<Integer>  skipCondFact = new Stack<>(); //cuva adrese onih netacnih uslova tj adrese sa kojih treba da se skoci 
+	private Stack<Integer>  skipCondFact = new Stack<>(); 
 	
 	private Stack<Integer>  skipCondition = new Stack<>();
 	
@@ -201,10 +201,43 @@ public class CodeGenerator extends VisitorAdaptor {
 		DesignatorCounter ds_counter = new DesignatorCounter();
 		designatorStatement_Smth.getDesignatorStmtList().traverseBottomUp(ds_counter); //ovo su oni pre mul znaka
 		
-		List<Obj> dsList = ds_counter.finalactDesignatorList;
+		List<Obj> dsList = ds_counter.designatorList;
+				
+		Obj arrayLength = Tab.insert(Obj.Var, "arrLength", Tab.intType);
+		arrayLength.setLevel(1);
+		
+		
+		
+		//Provera da li sa leve strane ima vise designatora nego sto je duzina niza sa desne
+		
+		Code.load(rightDes);
+		Code.put(Code.arraylength);
+		Code.store(arrayLength); //duzina niza sa desne strane
+		int runtimeErrPassed = - 0;
+		
+		Code.load(arrayLength); 
+		Code.loadConst(dsList.size() + ds_counter.designator_option_no_counter); //broj designatora pre *
+		Code.loadConst(1); //designator posle *
+		Code.put(Code.add); //ukupan broj designatora sa desne strane
+		Code.put(Code.sub); //oduzmi ukupan broj designatora sa leve od duzine niza sa desne strane
+		Code.loadConst(0); //uporedi sa nulom, ako je broj manji od nule, skaces na runtime
+		Code.putFalseJump(Code.lt, 0); //skaces unapred ne znas gde skaces
+
+		runtimeErrPassed = Code.pc-2;
+		
+		//zavrsi izvrsavanje - desio se runtime error
+		
+		Code.put(Code.trap);
+		Code.put(1);
+		
+		
+		//nastavi izvrsavanje, nije se desio runtime error
+	
+		Code.fixup(runtimeErrPassed);
 		
 		Obj index_right = Tab.insert(Obj.Var, "index_right", Tab.intType);
 		index_right.setLevel(1);
+		
 		
 		Code.loadConst(0);
 		Code.store(index_right);
@@ -230,13 +263,9 @@ public class CodeGenerator extends VisitorAdaptor {
 		}
 		
 		
-		Obj arrayLength = Tab.insert(Obj.Var, "arrLength", Tab.intType);
-		arrayLength.setLevel(1);
-		
-		
 		Code.load(leftDes);
 		Code.put(Code.arraylength);
-		Code.store(arrayLength); //duzina nisa sa desne strane
+		Code.store(arrayLength); //duzina niza sa leve strane
 		
 		
 		
@@ -259,7 +288,7 @@ public class CodeGenerator extends VisitorAdaptor {
 		Code.loadConst(0);
 		Code.putFalseJump(Code.ne, 0); //skaces unapred ne znas gde skaces
 		
-		int patch = Code.pc-2; //adresa sa koje se skocilo na osnovu koje ce se u runtime-u izracunati gde treba dase skoci
+		int patchLeftArrayFull = Code.pc-2; //adresa sa koje se skocilo na osnovu koje ce se u runtime-u izracunati gde treba dase skoci
 		
 		Code.load(leftDes); 
 		Code.load(index_left); 
@@ -289,8 +318,10 @@ public class CodeGenerator extends VisitorAdaptor {
 		Code.store(index_right);
 		
 		Code.putJump(ret);
+	
+		Code.fixup(patchLeftArrayFull); //ovde se skace nakon sto se gornja petlja zavrsi
+		
 
-		Code.fixup(patch);
 				
 	}
 	//Expresions
