@@ -29,16 +29,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private Obj mainMethod;
 
 	private Obj currentMethod;
-	
-	private String currentNamespaceName;
-	
-	private Struct currentNamespace;
-	
+
 	private boolean returnHappened = false;
 	
 	private int loopCounter = 0;
-	
-	private boolean definingNamespace = false; //true for defining, false for accessing namespace
 
 	int nVars;
 
@@ -101,10 +95,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		Obj conObj = null;
 		
-		if(currentNamespaceName == null) 
+		
 			 conObj = Tab.find(conDecl.getI1());
-		else 
-			conObj = Tab.find(currentNamespaceName + "::" + conDecl.getI1());
+
 
 		
 		if (conObj != Tab.noObj && conObj != null) {
@@ -113,11 +106,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		else {
 			if(constantType.assignableTo(currentType)) {
 				
-				if(currentNamespaceName == null) 	
+			
 					conObj = Tab.insert(Obj.Con, conDecl.getI1(), currentType);
-				else 
-					conObj = Tab.insert(Obj.Con, currentNamespaceName + "::" + conDecl.getI1(), currentType);
-								
+				
 				conObj.setAdr(constant);
 				
 			}
@@ -157,7 +148,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		Obj varObj = null;
 		
-		String namespaceName = currentNamespaceName == null ? "" : currentNamespaceName + "::";
+		
 		
 		if(currentMethod == null) 
 			varObj = Tab.find(varDecl_var.getI1());
@@ -166,10 +157,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			varObj = Tab.currentScope().findSymbol(varDecl_var.getI1());
 
 		if (varObj ==null || varObj == Tab.noObj) {
-			if(currentNamespaceName == null)
 				varObj = Tab.insert(Obj.Var, varDecl_var.getI1(), currentType);	
-			else
-				varObj = Tab.insert(Obj.Var, namespaceName + varDecl_var.getI1(), currentType);	
+
 
 		}
 		else
@@ -184,7 +173,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		Obj varObj = null;
 		
-		String namespaceName = currentNamespaceName == null ? "" : currentNamespaceName + "::";
+		
 		
 		if(currentMethod == null) 
 			varObj = Tab.find(varDecl_array.getI1());
@@ -193,10 +182,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			varObj = Tab.currentScope().findSymbol(varDecl_array.getI1());
 
 		if (varObj ==null || varObj == Tab.noObj) {
-			if(currentNamespaceName == null)
+		
 				 varObj = Tab.insert(Obj.Var, varDecl_array.getI1(), new Struct(Struct.Array, currentType));	
-			else
-				varObj = Tab.insert(Obj.Var, namespaceName + varDecl_array.getI1(), new Struct(Struct.Array, currentType));	
 
 		}
 		else
@@ -211,11 +198,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		String methName = methodReturnAndName_type.getI2();
 		
-		if(definingNamespace) {
-			String namespaceName = currentNamespaceName == null ? "" : currentNamespaceName + "::";
-			
-			methName = namespaceName + methName;
-		}
 		
 		methodReturnAndName_type.obj = currentMethod = Tab.insert(Obj.Meth, methName, currentType );
 		Tab.openScope();
@@ -227,11 +209,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		String methName = methodReturnAndName_void.getI1();
 		
-		if(definingNamespace) {
-			String namespaceName = currentNamespaceName == null ? "" : currentNamespaceName + "::";
-			
-			methName = namespaceName + methName;
-		}
 		
 		methodReturnAndName_void.obj = currentMethod = Tab.insert(Obj.Meth, methName, Tab.noType );
 		
@@ -270,13 +247,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			
 			String formParName = formPar_var.getI2();
 			
-			if(definingNamespace) {
-				String namespaceName = currentNamespaceName == null ? "" : currentNamespaceName + "::";
-				
-				formParName = namespaceName + formParName;
-			}
-			
-			
 			formParObj = Tab.insert(Obj.Var, formParName, currentType);	
 			formParObj.setFpPos(1);
 			currentMethod.setLevel(currentMethod.getLevel()+1);
@@ -301,12 +271,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			
 			
 			String formParName = formPar_array.getI2();
-			
-			if(definingNamespace) {
-				String namespaceName = currentNamespaceName == null ? "" : currentNamespaceName + "::";
-				
-				formParName = namespaceName + formParName;
-			}
 			
 			formParObj = Tab.insert(Obj.Var, formParName, new Struct(Struct.Array, currentType));	
 			formParObj.setFpPos(1);
@@ -338,32 +302,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 	}
 	
-//	@Override
-//	public void visit (NamespaceDeclList_Namespace namespaceDeclList_Namespace) {
-//
-//		
-//		
-//	}	
-	
-	@Override
-	public void visit (NamespaceDecl_Ident namespaceDecl_Ident) {
-		currentNamespace = null;
-		currentNamespaceName = null;
-		definingNamespace = false;
-	}
-	
-	@Override
-	public void visit (NamespaceName namespaceName) {
-		definingNamespace = true;
-		Obj namespaceObj = Tab.find(namespaceName.getI1());
-		if (namespaceObj != Tab.noObj) 
-			report_error("Dupla definicija namespace-a " + namespaceName.getI1(), namespaceName);
-		else {
-			currentNamespace = new Struct(Struct.Class);
-			currentNamespaceName = namespaceName.getI1();
-			namespaceObj = Tab.insert(Obj.Type, currentNamespaceName, currentNamespace);
-		}
-	}
 	
 	//=============================================================================================================
 	// Context conditions
@@ -417,87 +355,30 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	//Designator
 	
 	@Override
-	public void visit(Designator_Var_solo designator_Var_solo) {
+	public void visit(Designator_Var designator_Var) {
 		
-		Obj varObj = designator_Var_solo.getDesignatorVarName().obj;
+		String varName =designator_Var.getI1();
+		Obj varObj = Tab.find(varName);
 		
-		if(varObj == Tab.noObj)
-			designator_Var_solo.obj = Tab.noObj;
+		if(varObj == Tab.noObj) {
+			report_error("Pristup nedefinisanoj promenjivoj: " + varName, designator_Var);
+			designator_Var.obj = Tab.noObj; 
+		    }
+		else if (varObj.getKind() != Obj.Var && varObj.getKind()!= Obj.Con && varObj.getKind()!= Obj.Meth) 
+			report_error("Pristup neadekvatnoj promenjivoj: " + varName, designator_Var);
 		else {
-			designator_Var_solo.obj = varObj;
+			designator_Var.obj = varObj;
+			//report_info("Symbol access: " + designator_Var.getI1(), designator_Var);
 		}		
 		
 	}
 	
-	@Override
-	public void visit (DesignatorVarName designatorVarName) {
-		
-		
-		String varName = designatorVarName.getI1();
-		
-		
-		if(!definingNamespace) {
-			String namespaceName = currentNamespaceName == null ? "" : currentNamespaceName + "::";
-			varName = namespaceName + varName;
-			
-		} else varName = currentNamespaceName + "::" + varName;
-
-		Obj varObj = Tab.find(varName);
-		
-		
-		if(varObj == Tab.noObj) {
-			report_error("Pristup nedefinisanoj promenjivoj: " + varName, designatorVarName);
-			designatorVarName.obj = Tab.noObj;
-		}
-		else if (varObj.getKind() != Obj.Var && varObj.getKind()!= Obj.Con && varObj.getKind()!= Obj.Meth) 
-			report_error("Pristup neadekvatnoj promenjivoj: " + varName, designatorVarName);
-		else 
-			designatorVarName.obj = varObj;
-		
-		
-	}
 	
-	@Override
-	public void visit (DesignatorNamespaceName designatorNamespaceName) {
-		Obj varObj = Tab.find(designatorNamespaceName.getI1());
-		if(varObj == Tab.noObj) {
-			report_error("Pristup nedefinisanom namespace-u: " + designatorNamespaceName.getI1(), designatorNamespaceName);
-			designatorNamespaceName.obj = Tab.noObj;
-		}
-		else {
-			
-			designatorNamespaceName.obj = varObj;
-			currentNamespaceName = designatorNamespaceName.getI1();
-		}
-			
-		
-	}
-	
-	@Override
-	public void visit(Designator_Namespace_var Designator_Namespace_var) {
-		
-		Obj varObj = Designator_Namespace_var.getDesignatorVarName().obj;
-		
-		if(varObj == Tab.noObj)
-			Designator_Namespace_var.obj = Tab.noObj;
-		else {
-			Designator_Namespace_var.obj = varObj;
-			currentNamespaceName = null;
-		}
-			
-		
-	}
 	
 	@Override
 	public void visit(DesignatorArrayName designatorArrayName) {
 		String arrName = designatorArrayName.getI1();
-		
-		if(!definingNamespace) {
-			String namespaceName = currentNamespaceName == null ? "" : currentNamespaceName + "::";
-			arrName = namespaceName + arrName;
-		}
-		
-		
+
 		Obj arrObj = Tab.find(arrName);
 		
 		
@@ -509,38 +390,30 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			report_error("Neadekvatna promenjiva niza: " + arrName, designatorArrayName);
 			designatorArrayName.obj = Tab.noObj;
 		}
-		else {
+		else  {
 			designatorArrayName.obj = arrObj;
 			
 		}
 	}
 	
 	@Override
-	public void visit (Designator_Arr_solo designator_Arr_solo) {
-		Obj arrObj = designator_Arr_solo.getDesignatorArrayName().obj;
+	public void visit (Designator_Arr_Elem designator_Arr_Elem) {
+		Obj arrObj = designator_Arr_Elem.getDesignatorArrayName().obj;
 		if(arrObj == Tab.noObj) 
-			designator_Arr_solo.obj = Tab.noObj;
-		else if (!designator_Arr_solo.getExpr().struct.equals(Tab.intType)) {
-			report_error("Indeksiranje niza sa vrednoscu koja nije int", designator_Arr_solo);
+			designator_Arr_Elem.obj = Tab.noObj;
+		else if (!designator_Arr_Elem.getExpr().struct.equals(Tab.intType)) {
+			report_error("Indeksiranje niza sa vrednoscu koja nije int", designator_Arr_Elem);
 		}
 		else {
-			designator_Arr_solo.obj = new Obj(Obj.Elem, arrObj.getName()+"[$]", arrObj.getType().getElemType());
+			String arrName = designator_Arr_Elem.getDesignatorArrayName().getI1();
+			String output = "Array element access: "+ arrName + "[#]";
+			
+			//report_info(output, designator_Arr_solo);
+			designator_Arr_Elem.obj = new Obj(Obj.Elem, arrObj.getName()+"[$]", arrObj.getType().getElemType());
 		}
 	}
 	
-	@Override
-	public void visit (Designator_Namespace_Arr designator_Namespace_Arr) {
-		Obj arrObj = designator_Namespace_Arr.getDesignatorArrayName().obj;
-		if(arrObj == Tab.noObj) 
-			designator_Namespace_Arr.obj = Tab.noObj;
-		else if (!designator_Namespace_Arr.getExpr().struct.equals(Tab.intType)) {
-			report_error("Indeksiranje niza sa vrednoscu koja nije int", designator_Namespace_Arr);
-		}
-		else {
-			currentNamespaceName = null;
-			designator_Namespace_Arr.obj = new Obj(Obj.Elem, arrObj.getName()+"[$]", arrObj.getType().getElemType());
-		}
-	}
+
 	
 	@Override
 	public void visit(Factor_Designator_Meth factor_Designator_Meth) {
@@ -577,9 +450,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 					Struct fps = formal_param_list.get(i);
 					Struct aps = apList.get(i);
 					
-					if(!aps.assignableTo(fps)) {
+					if(!aps.assignableTo(fps)) 
 						throw new Exception("Tip formalnog act parametra nije dodeljiv formalnom parametru na indeksu: " + Integer.toString(i));
-					}
 				}
 				
 			}catch(Exception e) {
@@ -602,6 +474,22 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		else {
 			report_error("Velicina niza nije int tipa", factor_Designator_NewExpr);
 			factor_Designator_NewExpr.struct = Tab.noType;
+			
+		}
+			
+			
+	}
+	
+	//RANGE
+	
+	@Override
+	public void visit (Factor_Designator_Range factor_Designator_Range) {
+		if(factor_Designator_Range.getExpr().struct.equals(Tab.intType)) 			
+			factor_Designator_Range.struct = new Struct(Struct.Array, Tab.intType);
+			 
+		else {
+			report_error("Argument funkcije range nije tipa int", factor_Designator_Range);
+			factor_Designator_Range.struct = Tab.noType;
 			
 		}
 			
@@ -710,31 +598,58 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	}
 	
 	@Override
-	public void visit (DesignatorStatement_Smth designatorStatement_Smth) {
-		
-		Obj rightDes = designatorStatement_Smth.getDesignator1().obj;
-		Obj leftDes = designatorStatement_Smth.getDesignator().obj;
-		
-		DesignatorCounter ds_counter = new DesignatorCounter();
-		designatorStatement_Smth.getDesignatorStmtList().traverseBottomUp(ds_counter);
-		
-		List<Obj> dsList = ds_counter.finalactDesignatorList;
+	public void visit (DesignatorStatement_List_Comprehension designatorStatement_List_Comprehension) {
 		
 		
-		if(rightDes.getType().getKind() != Struct.Array) 
-			report_error("Promenjiva sa desne strane dodele nije nizovskog tipa: " + rightDes.getName(), designatorStatement_Smth);
-		else if (leftDes.getType().getKind() != Struct.Array)
-			report_error("Promenjiva sa leve strane dodele posle znaka MUL nije nizovskog tipa: " + leftDes.getName(), designatorStatement_Smth);
-		else if (!leftDes.getType().assignableTo(rightDes.getType()))
-			report_error("Promenjiva sa leve strane dodele posle znaka MUL nije dodeljiva promenjivoj sa desne strane: " + leftDes.getName(), designatorStatement_Smth);
-		else {
-			for (Obj ds : dsList) {
-				if(ds.getType().getKind() != Obj.Var && ds.getType().getKind() != Obj.Elem) 
-					report_error("Designator sa leve strane dodele pre znaka MUL nije promenjiva ili element niza : " + ds.getName(), designatorStatement_Smth);
-				else if (!rightDes.getType().getElemType().assignableTo(ds.getType())) 
-					report_error("Designator sa desne strane dodele: " + rightDes.getName() +" nije dodeljiv designatoru pre znaka MUL : " + ds.getName(), designatorStatement_Smth);		
-			}
-		}
+		Obj leftDes = designatorStatement_List_Comprehension.getDesignator().obj;
+		
+		Obj rightDes = designatorStatement_List_Comprehension.getDesignator1().obj;
+		
+		Struct expr = designatorStatement_List_Comprehension.getExpr().struct;
+		
+		DesignatorVarCounter desVarCounter = new DesignatorVarCounter();
+		
+		designatorStatement_List_Comprehension.getExpr().traverseBottomUp(desVarCounter);
+		
+		List<Designator_Var> varCnt = desVarCounter.designatorVarList;
+		
+		int varCount = varCnt.size();
+		
+		
+		
+		if(leftDes.getType().getKind() != Struct.Array) 
+			report_error("Promenjiva sa leve strane dodele nije nizovskog tipa: " + rightDes.getName(), designatorStatement_List_Comprehension);
+		else if (rightDes.getType().getKind() != Struct.Array)
+			report_error("Promenjiva sa desne strane dodele nije nizovskog tipa: " + leftDes.getName(), designatorStatement_List_Comprehension);
+		else if (leftDes.getType() != rightDes.getType()) 
+			report_error("Nizovi sa leve i desne strane dodele nisu istog tipa: ", designatorStatement_List_Comprehension);
+		else if (varCount > 1)
+			report_error("Vise od jedne promenjive se nalazi u okviru expr izraza: ", designatorStatement_List_Comprehension);
+		else if (Tab.find(varCnt.get(0).getI1())==Tab.noObj)
+			report_error("Promenjiva u okviru Expr nije definisana: ", designatorStatement_List_Comprehension);
+		else if (expr.getKind() != rightDes.getType().getKind())
+			report_error("Expr nije kompatibilan sa elementom niza kroz koji se iterira: ", designatorStatement_List_Comprehension);
+		
+		
+
+	}
+	
+	@Override
+	public void visit(ComprehensionCondition_if comprehensionCondition_if) {
+		
+		DesignatorVarCounter desVarCounter = new DesignatorVarCounter();
+		
+		comprehensionCondition_if.getCondition().getCondTermList().traverseBottomUp(desVarCounter);
+		
+		List<Designator_Var> varCnt = desVarCounter.designatorVarList;
+		
+		int varCount = varCnt.size();
+		
+		if (varCount > 1)
+			report_error("Vise od jedne promenjive se nalazi u okviru condition izraza: ", comprehensionCondition_if);
+		else if (Tab.find(varCnt.get(0).getI1())==Tab.noObj)
+			report_error("Promenjiva u okviru Condition nije definisana: ", comprehensionCondition_if);
+		
 	}
 	
 	//Single statements
@@ -755,9 +670,13 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(SingleStatement_Print1 singleStatement_Print1) {
 		
 		Struct type = singleStatement_Print1.getExpr().struct;
-		
-		if(!type.equals(Tab.intType) && !type.equals(Tab.charType) && !type.equals(boolType))
+
+		if(!type.equals(Tab.intType) && !type.equals(Tab.charType) && !type.equals(boolType) && type.getKind() != Struct.Array)
 			report_error("Print operacija neadekvatnog izraza ", singleStatement_Print1);
+		
+
+			//report_info("Function call: print(expr)" , singleStatement_Print1);
+		
 	}
 	
 	
@@ -765,8 +684,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(SingleStatement_Print2 singleStatement_Print2) {
 		Struct type = singleStatement_Print2.getExpr().struct;
 		
-		if(!type.equals(Tab.intType) && !type.equals(Tab.charType) && !type.equals(boolType))
+		if(!type.equals(Tab.intType) && !type.equals(Tab.charType) && !type.equals(boolType) && type.getKind() != Struct.Array)
 			report_error("Print operacija neadekvatnog izraza ", singleStatement_Print2);
+		
+		//report_info("Function call: print(expr, number )" , singleStatement_Print2);
+		
 	}
 	
 	@Override
@@ -813,9 +735,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 					Struct fps = formal_param_list.get(i);
 					Struct aps = apList.get(i);
 					
-					if(!aps.assignableTo(fps)) {
+					if(!aps.assignableTo(fps)) 
 						throw new Exception("Tip formalnog act parametra nije dodeljiv formalnom parametru na indeksu: " + Integer.toString(i));
-					}
+					//else
+						 //report_info("Function call" + designatorStatement_Meth.getDesignator().obj.getName(), designatorStatement_Meth);
 				}
 				
 			}catch(Exception e) {
@@ -824,6 +747,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			}
 			
 		}
+		
+		
 		
 	}
 	

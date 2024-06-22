@@ -49,7 +49,7 @@ scan with {:
 :}
 
 
-terminal PROGRAM, BREAK, CONST, NEW, PRINT, READ, RETURN, VOID, CONTINUE, FOR, STATIC, NAMESPACE;
+terminal PROGRAM, BREAK, CONST, NEW, PRINT, READ, RETURN, VOID, CONTINUE, FOR, STATIC, RANGE;
 terminal IF, ELSE;
 terminal PLUS, MINUS, MULTIPLY, DIVIDE, REM, EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL;
 terminal AND, OR;
@@ -58,21 +58,24 @@ terminal INC, DEC;
 terminal SEMI_COLON, COLON, COMMA, DOT, DBLCOLON;
 terminal LEFT_ROUND_BRACKET, RIGHT_ROUND_BRACKET, LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET, LEFT_CURLY_BRACKET, RIGHT_CURLY_BRACKET;
 
+terminal IN;
+
 terminal String IDENT;
 terminal Integer NUMBER, BOOL;
 terminal Character CHAR;
 
-nonterminal Program, DeclList, MethodDeclList, NamespaceDecl, ConstDeclList, VarDeclList, ConDecl, Constant, ConDeclMore, VarDeclMore, DesignatorOption, DesignatorStmtMore;
+nonterminal Program, DeclList, MethodDeclList,  ConstDeclList, VarDeclList, ConDecl, Constant, ConDeclMore, VarDeclMore;
 nonterminal MethodDecl, FormParList, LocalVarDeclList, StatementList, FormPar, FormParMore, Statement, DesignatorStatement, SingleStatement;
-nonterminal Statements, Assignop, DesignatorMore, ActParsMore, ActPars, Addop, Relop, Mulop, DesignatorStmtList, DesignatorStmtListBegin;
-nonterminal Unary, ElseStatement, CondFactFor, NamespaceDeclList, DesignatorStatementSingle, Else, ForBody, ForBodyBegin, ForCount, ForCountBegin, CondFactForBegin;
-nonterminal ProgramName, NamespaceName, ForNonTerm, ActPar, ActParListBegin, DesignatorStatementListBegin, DesignatorStatements, DesignatorStatementsMore;
+nonterminal Statements, Assignop, DesignatorMore, ActParsMore, ActPars, Addop, Relop, Mulop;
+nonterminal Unary, ElseStatement, CondFactFor, DesignatorStatementSingle, Else, ForBody, ForBodyBegin, ForCount, ForCountBegin, CondFactForBegin;
+nonterminal ProgramName, ForNonTerm, ActPar, ActParListBegin, DesignatorStatementListBegin, DesignatorStatements, DesignatorStatementsMore;
+nonterminal ComprehensionCondition;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Factor, FactorBody, MulOpList, Term, AddOpList, Expr;
 
 nonterminal  rs.etf.pp1.symboltable.concepts.Struct Condition, CondTerm, CondFact, CondTermList, CondFactList;
 
-nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorVarName, DesignatorNamespaceName, DesignatorArrayName;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorArrayName;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj MethodReturnAndName, VarDecl;
 
@@ -81,7 +84,7 @@ nonterminal rs.etf.pp1.symboltable.concepts.Struct Type;
 precedence left ELSE;
 
 
-Program ::= (Program) PROGRAM ProgramName NamespaceDeclList DeclList LEFT_CURLY_BRACKET MethodDeclList RIGHT_CURLY_BRACKET;
+Program ::= (Program) PROGRAM ProgramName DeclList LEFT_CURLY_BRACKET MethodDeclList RIGHT_CURLY_BRACKET;
 
 ProgramName ::= (ProgramName) IDENT;
 
@@ -93,14 +96,6 @@ DeclList ::= (DeclList_Con) DeclList ConstDeclList
 			 ;
 
 
-NamespaceDeclList ::= (NamespaceDeclList_Namespace) NamespaceDeclList NamespaceDecl
-					  |
-					  (NamespaceDeclList_Epsilon) /* epsilon */
-					  ;
-					  
-NamespaceDecl ::= (NamespaceDecl_Ident) NAMESPACE NamespaceName LEFT_CURLY_BRACKET DeclList LEFT_CURLY_BRACKET MethodDeclList RIGHT_CURLY_BRACKET RIGHT_CURLY_BRACKET;
-
-NamespaceName ::=(NamespaceName) IDENT;
 
 ConstDeclList ::= (ConstDeclList) CONST Type ConDecl ConDeclMore SEMI_COLON;
 
@@ -251,26 +246,13 @@ DesignatorStatementSingle ::= (DesignatorStatement_Assign) Designator Assignop E
 							  |
 							  (DesignatorStatement_Meth) Designator LEFT_ROUND_BRACKET ActPars RIGHT_ROUND_BRACKET
 							  |
-							  (DesignatorStatement_Smth) LEFT_SQUARE_BRACKET DesignatorStmtList MULTIPLY Designator RIGHT_SQUARE_BRACKET ASSIGNMENT Designator
+							  (DesignatorStatement_List_Comprehension) Designator Assignop LEFT_SQUARE_BRACKET FOR Expr IN Designator ComprehensionCondition  RIGHT_SQUARE_BRACKET
 							  ;
-						
-DesignatorStmtListBegin ::=(DesignatorStmtListBegin) /* epsilon */;
-
-DesignatorStmtList ::= (DesignatorStmtList_List)DesignatorStmtListBegin DesignatorOption COMMA DesignatorStmtMore
-					    |
-					   (DesignatorStmtList_Epsilon) DesignatorStmtListBegin
-					   ;
-					   
-DesignatorStmtMore ::= (DesignatorStmtMore_More) DesignatorOption COMMA DesignatorStmtMore
-					   |
-					   (DesignatorStmtMore_Epsilon) /* epsilon */
-					   ;
-
-
-DesignatorOption ::= (DesignatorOption_Yes) Designator
-					 |
-					 (DesignatorOption_No) /* epsilon */
-					 ;
+							  
+ComprehensionCondition ::= (ComprehensionCondition_epsilon) /* epsilon */
+							|
+							(ComprehensionCondition_if)	IF Condition
+							;
 
 
 CondFactFor ::= (CondFactFor_True) Condition
@@ -346,22 +328,19 @@ FactorBody ::= (Factor_Designator_Var) Designator
 		   (Factor_Designator_NewExpr) NEW Type LEFT_SQUARE_BRACKET Expr RIGHT_SQUARE_BRACKET
 		   |
 		   (Factor_Designator_Expr) LEFT_ROUND_BRACKET Expr RIGHT_ROUND_BRACKET
+		   |
+		   (Factor_Designator_Range)RANGE LEFT_ROUND_BRACKET Expr RIGHT_ROUND_BRACKET
 		   ;
 
 
-Designator ::= (Designator_Var_solo) DesignatorVarName
-               |
-               (Designator_Namespace_var) DesignatorNamespaceName DBLCOLON DesignatorVarName 
+Designator ::= (Designator_Var) IDENT
                | 
-               (Designator_Arr_solo) DesignatorArrayName LEFT_SQUARE_BRACKET Expr RIGHT_SQUARE_BRACKET 
-               | 
-               (Designator_Namespace_Arr) DesignatorNamespaceName DBLCOLON DesignatorArrayName LEFT_SQUARE_BRACKET Expr RIGHT_SQUARE_BRACKET 
+               (Designator_Arr_Elem) DesignatorArrayName LEFT_SQUARE_BRACKET Expr RIGHT_SQUARE_BRACKET 
                ;
                
 
 DesignatorArrayName ::= (DesignatorArrayName) IDENT;               
-DesignatorVarName ::= (DesignatorVarName) IDENT;             
-DesignatorNamespaceName ::=(DesignatorNamespaceName) IDENT;
+           
 
 			   
 Assignop ::= (Assignop) ASSIGNMENT;

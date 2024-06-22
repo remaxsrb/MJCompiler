@@ -9,6 +9,7 @@ import rs.ac.bg.etf.pp1.ast.*;
 import rs.etf.pp1.mj.runtime.Code;
 import rs.etf.pp1.symboltable.Tab;
 import rs.etf.pp1.symboltable.concepts.Obj;
+import rs.etf.pp1.symboltable.concepts.Struct;
 
 public class CodeGenerator extends VisitorAdaptor {
 	
@@ -78,20 +79,233 @@ public class CodeGenerator extends VisitorAdaptor {
 	
 	@Override
 	public void visit(SingleStatement_Print1 singleStatement_Print1) {
-		Code.loadConst(0);
 		if(singleStatement_Print1.getExpr().struct.equals(Tab.charType))
-			Code.put(Code.bprint);
-		else
-			Code.put(Code.print);
+		{
+			if (singleStatement_Print1.getExpr().struct.getKind() == Struct.Array)  {
+				
+				Obj arrayAddress = Tab.insert(Obj.Var, "arrAddressRange", Tab.intType);
+				arrayAddress.setLevel(1);
+				
+				Code.put(Code.dup);
+				Code.store(arrayAddress); //adresa novokreiranog niza
+				
+				Obj arrayLength = Tab.insert(Obj.Var, "arrLengthRange", Tab.intType);
+				arrayLength.setLevel(1);
+				
+				Obj index = Tab.insert(Obj.Var, "index", Tab.intType);
+				index.setLevel(1);
+				
+				Code.loadConst(0);
+				Code.store(index);
+				
+				//Code.loadConst(1);
+				Code.put(Code.arraylength);
+				//Code.put(Code.sub);
+				Code.store(arrayLength); //duzina niza
+				
+				int ret = Code.pc; //adresa pocetka petlje
+				
+				Code.load(arrayLength);
+				Code.load(index);
+				Code.putFalseJump(Code.ne, 0);
+				
+				int codeFixUpLoopEnd = Code.pc-2;	
+				
+				Code.load(arrayAddress);
+				Code.load(index);
+				
+				Code.put(Code.baload);
+				Code.loadConst(0);
+				Code.put(Code.bprint);
+				
+				Code.loadConst(1);
+				Code.load(index);
+				Code.put(Code.add);
+				Code.store(index);
+				
+				Code.putJump(ret); //vrati se na pocetak petlje
+				
+				Code.fixup(codeFixUpLoopEnd); //ovde se skace nakon sto se gornja petlja zavrsi
+				
+			}
+			else {
+				Code.loadConst(0);
+				Code.put(Code.bprint);
+			}
+		}
+		
+			
+		else {
+			if (singleStatement_Print1.getExpr().struct.getKind() == Struct.Array)  {
+				
+				Obj arrayAddress = Tab.insert(Obj.Var, "arrAddressRange", Tab.intType);
+				arrayAddress.setLevel(1);
+				
+				Code.put(Code.dup);
+				Code.store(arrayAddress); //adresa novokreiranog niza
+				
+				Obj arrayLength = Tab.insert(Obj.Var, "arrLengthRange", Tab.intType);
+				arrayLength.setLevel(1);
+				
+				Obj index = Tab.insert(Obj.Var, "index", Tab.intType);
+				index.setLevel(1);
+				
+				Code.loadConst(0);
+				Code.store(index);
+				
+				Code.put(Code.arraylength);
+
+				Code.store(arrayLength); //duzina niza
+				
+				int ret = Code.pc; //adresa pocetka petlje
+				
+				Code.load(arrayLength);
+				Code.load(index);
+				Code.putFalseJump(Code.ne, 0);
+				
+				int codeFixUpLoopEnd = Code.pc-2;	
+				
+				Code.load(arrayAddress);
+				Code.load(index);
+
+				
+				Code.put(Code.aload);
+				Code.loadConst(0);
+				Code.put(Code.print);
+				
+				Code.loadConst(1);
+				Code.load(index);
+				Code.put(Code.add);
+				Code.store(index);
+				
+				Code.putJump(ret); //vrati se na pocetak petlje
+				
+				Code.fixup(codeFixUpLoopEnd); //ovde se skace nakon sto se gornja petlja zavrsi
+			}
+			else {
+				Code.loadConst(0);
+				Code.put(Code.print);
+			}
+		}
+			
+
+		
+		
 	}
 	
 	@Override
 	public void visit(SingleStatement_Print2 singleStatement_Print2) {
-		Code.loadConst(singleStatement_Print2.getN2()); //pomeranje karaktera u desno za toliko blanko znaka
+		
 		if(singleStatement_Print2.getExpr().struct.equals(Tab.charType))
-			Code.put(Code.bprint);
-		else
-			Code.put(Code.print);
+		{
+			if (singleStatement_Print2.getExpr().struct.getKind() == Struct.Array)  {
+				
+				Obj arrayAddress = Tab.insert(Obj.Var, "arrAddressRange", Tab.intType);
+				arrayAddress.setLevel(1);
+				
+				Code.put(Code.dup);
+				Code.store(arrayAddress); //adresa novokreiranog niza
+				
+				Obj arrayLength = Tab.insert(Obj.Var, "arrLengthRange", Tab.intType);
+				arrayLength.setLevel(1);
+				
+				Obj index = Tab.insert(Obj.Var, "index", Tab.intType);
+				index.setLevel(1);
+				
+				Code.loadConst(0);
+				Code.store(index);
+				
+				//Code.loadConst(1);
+				Code.put(Code.arraylength);
+				//Code.put(Code.sub);
+				Code.store(arrayLength); //duzina niza
+				
+				int ret = Code.pc; //adresa pocetka petlje
+				
+				Code.load(arrayLength);
+				Code.load(index);
+				Code.putFalseJump(Code.ne, 0);
+				
+				int codeFixUpLoopEnd = Code.pc-2;	
+				
+				Code.load(arrayAddress);
+				Code.load(index);
+				
+				Code.put(Code.baload);
+				Code.loadConst(singleStatement_Print2.getN2()); //pomeranje karaktera u desno za toliko blanko znaka
+				Code.put(Code.bprint);
+				
+				Code.loadConst(1);
+				Code.load(index);
+				Code.put(Code.add);
+				Code.store(index);
+				
+				Code.putJump(ret); //vrati se na pocetak petlje
+				
+				Code.fixup(codeFixUpLoopEnd); //ovde se skace nakon sto se gornja petlja zavrsi
+				
+			}
+			else {
+				Code.loadConst(singleStatement_Print2.getN2()); //pomeranje karaktera u desno za toliko blanko znaka
+				Code.put(Code.bprint);
+			}
+		}
+		
+			
+		else {
+			if (singleStatement_Print2.getExpr().struct.getKind() == Struct.Array)  {
+				
+				Obj arrayAddress = Tab.insert(Obj.Var, "arrAddressRange", Tab.intType);
+				arrayAddress.setLevel(1);
+				
+				Code.put(Code.dup);
+				Code.store(arrayAddress); //adresa novokreiranog niza
+				
+				Obj arrayLength = Tab.insert(Obj.Var, "arrLengthRange", Tab.intType);
+				arrayLength.setLevel(1);
+				
+				Obj index = Tab.insert(Obj.Var, "index", Tab.intType);
+				index.setLevel(1);
+				
+				Code.loadConst(0);
+				Code.store(index);
+				
+				Code.put(Code.arraylength);
+
+				Code.store(arrayLength); //duzina niza
+				
+				int ret = Code.pc; //adresa pocetka petlje
+				
+				Code.load(arrayLength);
+				Code.load(index);
+				Code.putFalseJump(Code.ne, 0);
+				
+				int codeFixUpLoopEnd = Code.pc-2;	
+				
+				Code.load(arrayAddress);
+				Code.load(index);
+
+				
+				Code.put(Code.aload);
+				Code.loadConst(singleStatement_Print2.getN2()); //pomeranje karaktera u desno za toliko blanko znaka
+				Code.put(Code.print);
+				
+				Code.loadConst(1);
+				Code.load(index);
+				Code.put(Code.add);
+				Code.store(index);
+				
+				Code.putJump(ret); //vrati se na pocetak petlje
+				
+				Code.fixup(codeFixUpLoopEnd); //ovde se skace nakon sto se gornja petlja zavrsi
+			}
+			else {
+				Code.loadConst(singleStatement_Print2.getN2()); //pomeranje karaktera u desno za toliko blanko znaka
+				Code.put(Code.print);
+			}
+		}
+		
+		
 	}
 	
 	@Override
@@ -152,6 +366,61 @@ public class CodeGenerator extends VisitorAdaptor {
 			Code.put(1);
 	}
 	
+	//RANGE
+	
+	@Override
+	public void visit (Factor_Designator_Range factor_Designator_Range) {
+			
+		//velicina niza je vec na steku jer je taj cvor obidjen i nalazi se na vrhu steka
+		Code.put(Code.newarray);
+		Code.put(1); //alociraj niz sa N elemenata i inicijalizuj na nulu a adresa niz ce biti na vrhu steka
+		
+		Obj arrayAddress = Tab.insert(Obj.Var, "arrAddressRange", Tab.intType);
+		arrayAddress.setLevel(1);
+		
+		Code.put(Code.dup);
+		Code.store(arrayAddress); //adresa novokreiranog niza
+		
+		Obj arrayLength = Tab.insert(Obj.Var, "arrLengthRange", Tab.intType);
+		arrayLength.setLevel(1);
+		
+		Obj index = Tab.insert(Obj.Var, "index", Tab.intType);
+		index.setLevel(1);
+		
+		Code.loadConst(0);
+		Code.store(index);
+		
+		//Code.loadConst(1);
+		Code.put(Code.arraylength);
+		//Code.put(Code.sub);
+		Code.store(arrayLength); //duzina niza
+		
+		int ret = Code.pc; //adresa pocetka petlje
+		
+		Code.load(arrayLength);
+		Code.load(index);
+		Code.putFalseJump(Code.ne, 0);
+		
+		int codeFixUpLoopEnd = Code.pc-2;	
+		
+		Code.load(arrayAddress);
+		Code.load(index);
+		Code.load(index);
+		
+		Code.put(Code.astore);
+		
+		Code.loadConst(1);
+		Code.load(index);
+		Code.put(Code.add);
+		Code.store(index);
+		
+		Code.putJump(ret); //vrati se na pocetak petlje
+		
+		Code.fixup(codeFixUpLoopEnd); //ovde se skace nakon sto se gornja petlja zavrsi
+		
+		Code.load(arrayAddress);
+	}
+	
 	
 	@Override
 	public void visit (DesignatorStatement_Assign designatorStatement_Assign) {
@@ -192,138 +461,7 @@ public class CodeGenerator extends VisitorAdaptor {
 		
 	}
 	
-	@Override
-	public void visit (DesignatorStatement_Smth designatorStatement_Smth) {
-		
-		Obj rightDes = designatorStatement_Smth.getDesignator1().obj; //onaj posle dodele
-		Obj leftDes = designatorStatement_Smth.getDesignator().obj; //onaj posle mul znaka
-		
-		DesignatorCounter ds_counter = new DesignatorCounter();
-		designatorStatement_Smth.getDesignatorStmtList().traverseBottomUp(ds_counter); //ovo su oni pre mul znaka
-		
-		List<Obj> dsList = ds_counter.designatorList;
-				
-		Obj arrayLength = Tab.insert(Obj.Var, "arrLength", Tab.intType);
-		arrayLength.setLevel(1);
-		
-		
-		
-		//Provera da li sa leve strane ima vise designatora nego sto je duzina niza sa desne
-		
-		Code.load(rightDes);
-		Code.put(Code.arraylength);
-		Code.store(arrayLength); //duzina niza sa desne strane
-		int runtimeErrPassed = - 0;
-		
-		Code.load(arrayLength); 
-		Code.loadConst(dsList.size() + ds_counter.designator_option_no_counter); //broj designatora pre *
-		Code.loadConst(1); //designator posle *
-		Code.put(Code.add); //ukupan broj designatora sa desne strane
-		Code.put(Code.sub); //oduzmi ukupan broj designatora sa leve od duzine niza sa desne strane
-		Code.loadConst(0); //uporedi sa nulom, ako je broj manji od nule, skaces na runtime
-		Code.putFalseJump(Code.lt, 0); //skaces unapred ne znas gde skaces
-
-		runtimeErrPassed = Code.pc-2;
-		
-		//zavrsi izvrsavanje - desio se runtime error
-		
-		Code.put(Code.trap);
-		Code.put(1);
-		
-		
-		//nastavi izvrsavanje, nije se desio runtime error
 	
-		Code.fixup(runtimeErrPassed);
-		
-		Obj index_right = Tab.insert(Obj.Var, "index_right", Tab.intType);
-		index_right.setLevel(1);
-		
-		
-		Code.loadConst(0);
-		Code.store(index_right);
-
-		for (Obj ds : dsList) {
-
-			Code.load(rightDes); 
-			Code.load(index_right);
-			
-			 
-			if(rightDes.getType() == Tab.charType) 
-				Code.put(Code.baload);
-			else 
-				Code.put(Code.aload);
-			
-			Code.store(ds);
-			
-			Code.load(index_right);
-			Code.loadConst(1);
-			Code.put(Code.add);
-			Code.store(index_right);
-
-		}
-		
-		
-		Code.load(leftDes);
-		Code.put(Code.arraylength);
-		Code.store(arrayLength); //duzina niza sa leve strane
-		
-		
-		
-		Obj index_left = Tab.insert(Obj.Var, "index_left", Tab.intType);
-		index_left.setLevel(1);
-		
-		
-		Code.loadConst(0);
-		Code.store(index_left);
- 
-		
-
-		//pravim petlju koja ce se zaustaviti kada arrayLength(LEFT) i indexLEFT budu jednaki
-		
-		int ret = Code.pc; //adresa pocetka petlje
-
-		Code.load(arrayLength);
-		Code.load(index_left); 
-		Code.put(Code.sub);
-		Code.loadConst(0);
-		Code.putFalseJump(Code.ne, 0); //skaces unapred ne znas gde skaces
-		
-		int patchLeftArrayFull = Code.pc-2; //adresa sa koje se skocilo na osnovu koje ce se u runtime-u izracunati gde treba dase skoci
-		
-		Code.load(leftDes); 
-		Code.load(index_left); 
-		
-		Code.load(rightDes); 
-		Code.load(index_right); 
-		
-		 
-		if(leftDes.getType() == Tab.charType) 
-			Code.put(Code.baload);
-		else 
-			Code.put(Code.aload);
-		
-		if(leftDes.getType() == Tab.charType) 
-			Code.put(Code.bastore);
-		else 
-			Code.put(Code.astore);
-		
-		Code.load(index_left);
-		Code.loadConst(1);
-		Code.put(Code.add);
-		Code.store(index_left);
-		
-		Code.load(index_right);
-		Code.loadConst(1);
-		Code.put(Code.add);
-		Code.store(index_right);
-		
-		Code.putJump(ret);
-	
-		Code.fixup(patchLeftArrayFull); //ovde se skace nakon sto se gornja petlja zavrsi
-		
-
-				
-	}
 	//Expresions
 	
 		@Override
@@ -370,6 +508,8 @@ public class CodeGenerator extends VisitorAdaptor {
 		Code.loadConst(factor_Designator_BOOL.getB1());
 		
 	}
+	
+
 	
 	@Override
 	public void visit (Factor_Designator_Meth factor_Designator_Meth) {
@@ -563,8 +703,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	@Override
-	public void visit(DesignatorVarName designatorVarName) {	
-		if(designatorVarName.getI1().equals( "ord")) 
+	public void visit(Designator_Var designator_Var) {	
+		if(designator_Var.getI1().equals( "ord")) 
 					Code.loadConst(0);
 	}
 
