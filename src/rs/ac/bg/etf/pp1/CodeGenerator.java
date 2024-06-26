@@ -36,6 +36,8 @@ public class CodeGenerator extends VisitorAdaptor {
 	private Stack<Integer> continueStack = new Stack<>();
 	
 	private int loopCounter = 0;
+	
+	
 
 
 	public int getMainPc() {
@@ -390,9 +392,7 @@ public class CodeGenerator extends VisitorAdaptor {
 		Code.loadConst(0);
 		Code.store(index);
 		
-		//Code.loadConst(1);
 		Code.put(Code.arraylength);
-		//Code.put(Code.sub);
 		Code.store(arrayLength); //duzina niza
 		
 		int ret = Code.pc; //adresa pocetka petlje
@@ -458,6 +458,24 @@ public class CodeGenerator extends VisitorAdaptor {
 
 		if(designatorStatement_Meth.getDesignator().obj.getType() != Tab.noType)
 			Code.put(Code.pop);
+		
+	}
+	
+	@Override
+	public void visit (DesignatorStatement_List_Comprehension designatorStatement_List_Comprehension) {
+		
+		int dst_array_address = designatorStatement_List_Comprehension.getDesignator().obj.getAdr();
+		
+		int src_array_address = designatorStatement_List_Comprehension.getDesignator1().obj.getAdr();
+		
+		Obj src_array_length = Tab.insert(Obj.Var, "arrLengthRange", Tab.intType);
+		src_array_length.setLevel(1);
+		
+		Obj src_index = Tab.insert(Obj.Var, "index", Tab.intType);
+		src_index.setLevel(1);
+		
+		
+		//izraz expr je vec na steku jer je vec obidjen
 		
 	}
 	

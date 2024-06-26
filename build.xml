@@ -13,7 +13,7 @@
 				<exclude name="TabExtension.java"/>
 				<exclude name="CodeGenerator.java"/>
 				<exclude name="ActParCounter.java"/>
-				<exclude name="DesignatorCounter.java"/>
+				<exclude name="DesignatorVarCounter.java"/>
 			</fileset>
 		</delete>
 		<delete>
